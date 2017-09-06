@@ -128,7 +128,7 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
         var color = isIncoming ? self.baseStyle.baseColorIncoming : self.baseStyle.baseColorOutgoing
 
         switch status {
-        case .success:
+        case .success, .idle, .received, .seen:
             break
         case .failed, .sending:
             color = color.bma_blendWithColor(UIColor.white.withAlphaComponent(0.70))

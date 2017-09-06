@@ -25,9 +25,12 @@
 import Foundation
 
 public enum MessageViewModelStatus {
+    case idle
     case success
     case sending
     case failed
+    case received
+    case seen
 }
 
 public extension MessageStatus {
@@ -39,6 +42,12 @@ public extension MessageStatus {
             return MessageViewModelStatus.failed
         case .sending:
             return MessageViewModelStatus.sending
+        case .idle:
+            return MessageViewModelStatus.idle
+        case .received:
+            return MessageViewModelStatus.received
+        case .seen:
+            return MessageViewModelStatus.seen
         }
     }
 }

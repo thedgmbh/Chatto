@@ -26,9 +26,12 @@ import Foundation
 import Chatto
 
 public enum MessageStatus {
+    case idle
     case failed
     case sending
     case success
+    case received
+    case seen
 }
 
 public protocol MessageModelProtocol: ChatItemProtocol {
