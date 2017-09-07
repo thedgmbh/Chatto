@@ -36,7 +36,9 @@ public protocol ChatInputBarDelegate: class {
 
 @objc
 open class ChatInputBar: ReusableXibView {
-
+    
+    typealias Class = ChatInputBar
+    
     public weak var delegate: ChatInputBarDelegate?
     weak var presenter: ChatInputBarPresenter?
 
@@ -74,6 +76,8 @@ open class ChatInputBar: ReusableXibView {
         self.textView.delegate = self
         self.scrollView.scrollsToTop = false
         self.sendButton.isEnabled = false
+        self.sendButton.contentMode = .scaleAspectFit
+        self.sendButton.setImage(UIImage(named: "sendButton", in: Bundle(for: Class.self), compatibleWith: nil)!, for: .normal)
     }
 
     open override func updateConstraints() {
