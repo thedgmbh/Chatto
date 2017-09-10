@@ -58,6 +58,14 @@ public final class TextMessageCollectionViewCell: BaseMessageCollectionViewCell<
         didSet {
             self.messageViewModel = self.textMessageViewModel
             self.bubbleView.textMessageViewModel = self.textMessageViewModel
+            
+            if !self.messageViewModel.isIncoming {
+                self.bubbleView.layer.shadowColor = UIColor.black.cgColor
+                self.bubbleView.layer.shadowOpacity = 0.25
+                self.bubbleView.layer.shadowOffset = CGSize(width: 0, height: 5)
+                self.bubbleView.layer.shadowRadius = 7
+                
+            }
         }
     }
 
