@@ -165,8 +165,9 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
             needsToUpdateText = true
         }
 
-        if needsToUpdateText || self.textView.text != viewModel.text {
-            self.textView.text = viewModel.text
+        if needsToUpdateText || self.textView.text != viewModel.text {            
+            let formattedText = formatString(viewModel.text)
+            self.textView.attributedText = formattedText
         }
 
         let textInsets = style.textInsets(viewModel: viewModel, isSelected: self.selected)
@@ -316,5 +317,95 @@ private final class ChatMessageTextView: UITextView {
             // Part of the heaviest stack trace when scrolling (when bounds are set)
             // See https://github.com/badoo/Chatto/pull/144
         }
+    }
+}
+
+extension TextBubbleView {
+    func formatString(_ str : String) -> NSAttributedString {
+        
+        let fontSize: CGFloat = 15
+        
+        let boldMarker = "*"
+        let fixedBoldMarker = "[*]"
+        let italicMarker = "_"
+        let strikethroughMarker = "~"
+        let underlineMarker = "```"
+        let anyTextRegString = ".+"
+        
+        var textsToReplace = [(String, String)]()
+        
+        let boldRegEx = try! NSRegularExpression(pattern: fixedBoldMarker+anyTextRegString+fixedBoldMarker, options: NSRegularExpression.Options.caseInsensitive)
+        let italicRegEx = try! NSRegularExpression(pattern: italicMarker+anyTextRegString+italicMarker, options: NSRegularExpression.Options.caseInsensitive)
+        let strikethroughRegEx = try! NSRegularExpression(pattern: strikethroughMarker+anyTextRegString+strikethroughMarker, options: NSRegularExpression.Options.caseInsensitive)
+        let underlineRegEx = try! NSRegularExpression(pattern: underlineMarker+anyTextRegString+underlineMarker, options: NSRegularExpression.Options.caseInsensitive)
+        
+        let formattedString = NSMutableAttributedString(string: str)
+        
+        let boldMatches = boldRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
+        let italicMatches = italicRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
+        let strikethroughMatches = strikethroughRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
+        let underlineMatches = underlineRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
+        
+        formattedString.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: fontSize), range: NSMakeRange(0, formattedString.string.characters.count))
+        
+        for match in boldMatches {
+            
+            formattedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFont(ofSize: fontSize), range: match.range)
+            
+            let startIndex = str.index(str.startIndex, offsetBy: match.range.location)
+            let endIndex = str.index(str.startIndex, offsetBy: match.range.length + match.range.location-1)
+            
+            let originalText = str[startIndex...endIndex]
+            let targetText = originalText.replacingOccurrences(of: boldMarker, with: "")
+            
+            textsToReplace.append((originalText, targetText))
+        }
+        
+        for match in italicMatches {
+            
+            formattedString.addAttribute(NSFontAttributeName, value: UIFont.italicSystemFont(ofSize: fontSize), range: match.range)
+            
+            let startIndex = str.index(str.startIndex, offsetBy: match.range.location)
+            let endIndex = str.index(str.startIndex, offsetBy: match.range.length + match.range.location-1)
+            
+            let originalText = str[startIndex...endIndex]
+            let targetText = originalText.replacingOccurrences(of: italicMarker, with: "")
+            
+            textsToReplace.append((originalText, targetText))
+            
+        }
+        
+        for match in strikethroughMatches {
+            formattedString.addAttribute(NSBaselineOffsetAttributeName, value: 0, range: match.range)
+            formattedString.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: match.range)
+            
+            let startIndex = str.index(str.startIndex, offsetBy: match.range.location)
+            let endIndex = str.index(str.startIndex, offsetBy: match.range.length + match.range.location-1)
+            
+            let originalText = str[startIndex...endIndex]
+            let targetText = originalText.replacingOccurrences(of: strikethroughMarker, with: "")
+            
+            textsToReplace.append((originalText, targetText))
+            
+        }
+        
+        for match in underlineMatches {
+            formattedString.addAttribute(NSUnderlineStyleAttributeName, value: NSUnderlineStyle.styleSingle.rawValue, range: match.range)
+            
+            let startIndex = str.index(str.startIndex, offsetBy: match.range.location)
+            let endIndex = str.index(str.startIndex, offsetBy: match.range.length + match.range.location-1)
+            
+            let originalText = str[startIndex...endIndex]
+            let targetText = originalText.replacingOccurrences(of: underlineMarker, with: "")
+            
+            textsToReplace.append((originalText, targetText))
+            
+        }
+        
+        for (oldString, newString) in textsToReplace {
+            formattedString.mutableString.replaceOccurrences(of: oldString, with: newString, options: [], range: NSMakeRange(0, formattedString.string.characters.count))
+        }
+        
+        return formattedString
     }
 }
