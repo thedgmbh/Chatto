@@ -332,10 +332,10 @@ extension TextBubbleView {
         
         var textsToReplace = [(String, String)]()
         
-        let boldRegEx = try! NSRegularExpression(pattern: "[*][^*]+[*]", options: NSRegularExpression.Options.caseInsensitive)
-        let italicRegEx = try! NSRegularExpression(pattern: "_[^_]+_", options: NSRegularExpression.Options.caseInsensitive)
-        let strikethroughRegEx = try! NSRegularExpression(pattern: "~[^~]+~", options: NSRegularExpression.Options.caseInsensitive)
-        let underlineRegEx = try! NSRegularExpression(pattern: "```[^```]+```", options: NSRegularExpression.Options.caseInsensitive)
+        let boldRegEx = try! NSRegularExpression(pattern: "[*][^ ][^*]+[^ ][*]", options: NSRegularExpression.Options.caseInsensitive)
+        let italicRegEx = try! NSRegularExpression(pattern: "_[^ ][^_]+[^ ]_", options: NSRegularExpression.Options.caseInsensitive)
+        let strikethroughRegEx = try! NSRegularExpression(pattern: "~[^ ][^~]+[^ ]~", options: NSRegularExpression.Options.caseInsensitive)
+        let underlineRegEx = try! NSRegularExpression(pattern: "```[^ ][^```]+[^ ]```", options: NSRegularExpression.Options.caseInsensitive)
         
         let formattedString = NSMutableAttributedString(string: str)
         
