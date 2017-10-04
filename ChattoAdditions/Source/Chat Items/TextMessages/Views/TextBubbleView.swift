@@ -41,10 +41,10 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
         didSet {
             if self.viewContext == .sizing {
                 self.textView.dataDetectorTypes = UIDataDetectorTypes()
-                self.textView.isSelectable = false
+//                self.textView.isSelectable = false
             } else {
                 self.textView.dataDetectorTypes = .all
-                self.textView.isSelectable = true
+//                self.textView.isSelectable = true
             }
         }
     }
@@ -97,7 +97,7 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
             textView.backgroundColor = UIColor.clear
         })
         textView.isEditable = false
-        textView.isSelectable = true
+        textView.isSelectable = false
         textView.dataDetectorTypes = .all
         textView.scrollsToTop = false
         textView.isScrollEnabled = false
