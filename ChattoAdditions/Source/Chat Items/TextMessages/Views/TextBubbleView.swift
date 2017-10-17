@@ -344,7 +344,7 @@ extension TextBubbleView {
         let strikethroughMatches = strikethroughRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
         let underlineMatches = underlineRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
         
-        formattedString.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: fontSize), range: NSMakeRange(0, formattedString.string.characters.count))
+        formattedString.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: fontSize), range: NSMakeRange(0, formattedString.length))
         
         for match in boldMatches {
             
@@ -401,7 +401,7 @@ extension TextBubbleView {
         }
         
         for (oldString, newString) in textsToReplace {
-            formattedString.mutableString.replaceOccurrences(of: oldString, with: newString, options: [], range: NSMakeRange(0, formattedString.string.characters.count))
+            formattedString.mutableString.replaceOccurrences(of: oldString, with: newString, options: [], range: NSMakeRange(0, formattedString.length))
         }
         
         return formattedString
