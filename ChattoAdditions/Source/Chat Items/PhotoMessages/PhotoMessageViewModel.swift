@@ -1,18 +1,18 @@
 /*
  The MIT License (MIT)
-
+ 
  Copyright (c) 2015-present Badoo Trading Limited.
-
+ 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
-
+ 
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
-
+ 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*/
+ */
 
 import UIKit
 
@@ -42,6 +42,10 @@ public protocol PhotoMessageViewModelProtocol: DecoratedMessageViewModelProtocol
     var transferStatus: Observable<TransferStatus> { get set }
     var image: Observable<UIImage?> { get set }
     var imageSize: CGSize { get }
+    var imagePath: String? { get set }
+    var videoPath: String? { get set }
+    var mediaType: String { get set }
+    var mediaBeenDownloaded: Bool { get set }
 }
 
 open class PhotoMessageViewModel<PhotoMessageModelT: PhotoMessageModelProtocol>: PhotoMessageViewModelProtocol {
@@ -54,23 +58,36 @@ open class PhotoMessageViewModel<PhotoMessageModelT: PhotoMessageModelProtocol>:
     public var transferDirection: Observable<TransferDirection> = Observable(.download)
     public var image: Observable<UIImage?>
     open var imageSize: CGSize {
-        return self.photoMessage.imageSize
+        if let imageSize = photoMessage.imageSize {
+            return imageSize
+        } else {
+            return CGSize(width: 0.0, height: 0.0)
+        }
+        
     }
+    public var imagePath: String?
+    public var videoPath: String?
+    public var mediaType: String
+    public var mediaBeenDownloaded: Bool
     public let messageViewModel: MessageViewModelProtocol
     open var showsFailedIcon: Bool {
         return self.messageViewModel.showsFailedIcon || self.transferStatus.value == .failed
     }
-
+    
     public init(photoMessage: PhotoMessageModelT, messageViewModel: MessageViewModelProtocol) {
         self._photoMessage = photoMessage
         self.image = Observable(photoMessage.image)
+        self.imagePath = photoMessage.imagePath
+        self.videoPath = photoMessage.videoPath
+        self.mediaType = photoMessage.mediaType
+        self.mediaBeenDownloaded = photoMessage.mediaBeenDownloaded
         self.messageViewModel = messageViewModel
     }
-
+    
     open func willBeShown() {
         // Need to declare empty. Otherwise subclass code won't execute (as of Xcode 7.2)
     }
-
+    
     open func wasHidden() {
         // Need to declare empty. Otherwise subclass code won't execute (as of Xcode 7.2)
     }
@@ -78,16 +95,17 @@ open class PhotoMessageViewModel<PhotoMessageModelT: PhotoMessageModelProtocol>:
 
 open class PhotoMessageViewModelDefaultBuilder<PhotoMessageModelT: PhotoMessageModelProtocol>: ViewModelBuilderProtocol {
     public init() {}
-
+    
     let messageViewModelBuilder = MessageViewModelDefaultBuilder()
-
+    
     open func createViewModel(_ model: PhotoMessageModelT) -> PhotoMessageViewModel<PhotoMessageModelT> {
         let messageViewModel = self.messageViewModelBuilder.createMessageViewModel(model)
         let photoMessageViewModel = PhotoMessageViewModel(photoMessage: model, messageViewModel: messageViewModel)
         return photoMessageViewModel
     }
-
+    
     open func canCreateViewModel(fromModel model: Any) -> Bool {
         return model is PhotoMessageModelT
     }
 }
+
