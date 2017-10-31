@@ -170,7 +170,7 @@ open class PhotoBubbleView: UIView, MaximumLayoutWidthSpecificable, BackgroundSi
             self.imageView.image = image
             
             // TODO: Change the name using the constant file instead on migrating the file into the app
-            if self.photoMessageViewModel.mediaType == "video" && self.photoMessageViewModel.mediaBeenDownloaded {
+            if self.photoMessageViewModel.mediaType == "video" && self.photoMessageViewModel.mediaBeenDownloaded && (self.progressIndicatorView.progressStatus != .inProgress || self.photoMessageViewModel.transferStatus.value == .success) {
                 self.imageView.addSubview(playIconImageView)
                 self.playIconImageView.isHidden = false
             } else {
