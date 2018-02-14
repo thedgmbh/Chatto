@@ -166,7 +166,7 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
         }
 
         if needsToUpdateText || self.textView.text != viewModel.text {            
-            let formattedText = formatString(viewModel.text)
+            let formattedText = formatString(viewModel.text, fontSize: font.fontDescriptor.pointSize)
             self.textView.attributedText = formattedText
         }
 
@@ -321,9 +321,7 @@ private final class ChatMessageTextView: UITextView {
 }
 
 extension TextBubbleView {
-    func formatString(_ str : String) -> NSAttributedString {
-        
-        let fontSize: CGFloat = 15
+    func formatString(_ str : String, fontSize : CGFloat = 15) -> NSAttributedString {
         
         let boldMarker = "*"
         let italicMarker = "_"
