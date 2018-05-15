@@ -166,7 +166,7 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
         }
 
         if needsToUpdateText || self.textView.text != viewModel.text {            
-            let formattedText = formatString(viewModel.text, fontSize: font.fontDescriptor.pointSize)
+            let formattedText = formatString(viewModel.text, fontSize: font.fontDescriptor.pointSize, textColor: textColor)
             self.textView.attributedText = formattedText
         }
 
@@ -321,7 +321,7 @@ private final class ChatMessageTextView: UITextView {
 }
 
 extension TextBubbleView {
-    func formatString(_ str : String, fontSize : CGFloat = 15) -> NSAttributedString {
+    func formatString(_ str : String, fontSize : CGFloat = 15, textColor: UIColor) -> NSAttributedString {
         
         let boldMarker = "*"
         let italicMarker = "_"
@@ -401,6 +401,8 @@ extension TextBubbleView {
         for (oldString, newString) in textsToReplace {
             formattedString.mutableString.replaceOccurrences(of: oldString, with: newString, options: [], range: NSMakeRange(0, formattedString.length))
         }
+        
+        formattedString.addAttributes([NSForegroundColorAttributeName:textColor], range: NSMakeRange(0, formattedString.length))
         
         return formattedString
     }
