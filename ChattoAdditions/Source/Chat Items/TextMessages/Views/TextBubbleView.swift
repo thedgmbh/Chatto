@@ -246,7 +246,8 @@ private final class TextBubbleLayoutModel {
     func calculateLayout() {
         let textHorizontalInset = self.layoutContext.textInsets.bma_horziontalInset + 2
         let maxTextWidth = self.layoutContext.preferredMaxLayoutWidth - textHorizontalInset
-        let textSize = self.textSizeThatFitsWidth(maxTextWidth)
+        var textSize = self.textSizeThatFitsWidth(maxTextWidth)
+        textSize.width += 5
         let bubbleSize = textSize.bma_outsetBy(dx: textHorizontalInset, dy: self.layoutContext.textInsets.bma_verticalInset)
         self.bubbleFrame = CGRect(origin: CGPoint.zero, size: bubbleSize)
         self.textFrame = self.bubbleFrame
