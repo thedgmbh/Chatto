@@ -79,10 +79,10 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
 
     lazy private var images: [ImageKey: UIImage] = {
         return [
-            .template(isIncoming: true, showsTail: true) : self.bubbleImages.incomingTail(),
-            .template(isIncoming: true, showsTail: false) : self.bubbleImages.incomingNoTail(),
-            .template(isIncoming: false, showsTail: true) : self.bubbleImages.outgoingTail(),
-            .template(isIncoming: false, showsTail: false) : self.bubbleImages.outgoingNoTail()
+            .template(isIncoming: true, showsTail: true): self.bubbleImages.incomingTail(),
+            .template(isIncoming: true, showsTail: false): self.bubbleImages.incomingNoTail(),
+            .template(isIncoming: false, showsTail: true): self.bubbleImages.outgoingTail(),
+            .template(isIncoming: false, showsTail: false): self.bubbleImages.outgoingNoTail()
         ]
     }()
 
@@ -107,12 +107,12 @@ open class TextMessageCollectionViewCellDefaultStyle: TextMessageCollectionViewC
     }
 
     open func bubbleImage(viewModel: TextMessageViewModelProtocol, isSelected: Bool) -> UIImage {
-        let key = ImageKey.normal(isIncoming: viewModel.isIncoming, status: viewModel.status, showsTail: viewModel.showsTail, isSelected: isSelected)
+        let key = ImageKey.normal(isIncoming: viewModel.isIncoming, status: viewModel.status, showsTail: viewModel.decorationAttributes.isShowingTail, isSelected: isSelected)
 
         if let image = self.images[key] {
             return image
         } else {
-            let templateKey = ImageKey.template(isIncoming: viewModel.isIncoming, showsTail: viewModel.showsTail)
+            let templateKey = ImageKey.template(isIncoming: viewModel.isIncoming, showsTail: viewModel.decorationAttributes.isShowingTail)
             if let image = self.images[templateKey] {
                 let image = self.createImage(templateImage: image, isIncoming: viewModel.isIncoming, status: viewModel.status, isSelected: isSelected)
                 self.images[key] = image
