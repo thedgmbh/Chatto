@@ -232,9 +232,9 @@
 			buildConfigurationList = C32BB7341BE0504D0069EC50 /* Build configuration list for PBXNativeTarget "Chatto" */;
 			buildPhases = (
 				C3B327211BE1888E008444CF /* ShellScript */,
+				C32BB71D1BE0504D0069EC50 /* Headers */,
 				C32BB71B1BE0504D0069EC50 /* Sources */,
 				C32BB71C1BE0504D0069EC50 /* Frameworks */,
-				C32BB71D1BE0504D0069EC50 /* Headers */,
 				C32BB71E1BE0504D0069EC50 /* Resources */,
 			);
 			buildRules = (
