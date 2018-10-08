@@ -25,13 +25,50 @@
 import Foundation
 import Chatto
 
+public struct BaseMessageDecorationAttributes {
+    public var canShowFailedIcon: Bool
+    public let isShowingTail: Bool
+    public let isShowingAvatar: Bool
+    public let isShowingSelectionIndicator: Bool
+    public let isSelected: Bool
+
+    public init(canShowFailedIcon: Bool = true,
+                isShowingTail: Bool = false,
+                isShowingAvatar: Bool = false,
+                isShowingSelectionIndicator: Bool = false,
+                isSelected: Bool = false) {
+        self.canShowFailedIcon = canShowFailedIcon
+        self.isShowingTail = isShowingTail
+        self.isShowingAvatar = isShowingAvatar
+        self.isShowingSelectionIndicator = isShowingSelectionIndicator
+        self.isSelected = isSelected
+    }
+}
+
 public struct ChatItemDecorationAttributes: ChatItemDecorationAttributesProtocol {
     public let bottomMargin: CGFloat
-    public let showsTail: Bool
-    public let canShowAvatar: Bool
-    public init(bottomMargin: CGFloat, showsTail: Bool, canShowAvatar: Bool) {
+    public let messageDecorationAttributes: BaseMessageDecorationAttributes
+
+    public init(bottomMargin: CGFloat,
+                messageDecorationAttributes: BaseMessageDecorationAttributes) {
         self.bottomMargin = bottomMargin
-        self.showsTail = showsTail
-        self.canShowAvatar = canShowAvatar
+        self.messageDecorationAttributes = messageDecorationAttributes
+    }
+
+    @available(*, deprecated)
+    public init(bottomMargin: CGFloat,
+                canShowTail: Bool,
+                canShowAvatar: Bool,
+                canShowFailedIcon: Bool,
+                isShowingSelectionIndicator: Bool = false,
+                isSelected: Bool = false) {
+        let messageDecorationAttributes = BaseMessageDecorationAttributes(
+            canShowFailedIcon: canShowFailedIcon,
+            isShowingTail: canShowTail,
+            isShowingAvatar: canShowAvatar,
+            isShowingSelectionIndicator: isShowingSelectionIndicator,
+            isSelected: isSelected
+        )
+        self.init(bottomMargin: bottomMargin, messageDecorationAttributes: messageDecorationAttributes)
     }
 }

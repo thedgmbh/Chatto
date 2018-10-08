@@ -32,6 +32,8 @@ public protocol ChatInputBarDelegate: class {
     func inputBarSendButtonPressed(_ inputBar: ChatInputBar)
     func inputBar(_ inputBar: ChatInputBar, shouldFocusOnItem item: ChatInputItemProtocol) -> Bool
     func inputBar(_ inputBar: ChatInputBar, didReceiveFocusOnItem item: ChatInputItemProtocol)
+    func inputBarDidShowPlaceholder(_ inputBar: ChatInputBar)
+    func inputBarDidHidePlaceholder(_ inputBar: ChatInputBar)
 }
 
 @objc
@@ -74,6 +76,7 @@ open class ChatInputBar: ReusableXibView {
         self.topBorderHeightConstraint.constant = 1 / UIScreen.main.scale
         self.textView.scrollsToTop = false
         self.textView.delegate = self
+        self.textView.placeholderDelegate = self
         self.scrollView.scrollsToTop = false
         self.sendButton.isEnabled = false
         self.sendButton.contentMode = .scaleAspectFit
@@ -161,6 +164,24 @@ open class ChatInputBar: ReusableXibView {
             self.updateSendButton()
         }
     }
+    
+    public var inputSelectedRange: NSRange {
+        get {
+            return self.textView.selectedRange
+        }
+        set {
+            self.textView.selectedRange = newValue
+        }
+    }
+
+    public var placeholderText: String {
+        get {
+            return self.textView.placeholderText
+        }
+        set {
+            self.textView.placeholderText = newValue
+        }
+    }
 
     fileprivate func updateSendButton() {
         self.sendButton.isEnabled = self.shouldEnableSendButton(self)
@@ -200,9 +221,10 @@ extension ChatInputBar {
         self.textView.textContainerInset = appearance.textInputAppearance.textInsets
         self.textView.setTextPlaceholderFont(appearance.textInputAppearance.placeholderFont)
         self.textView.setTextPlaceholderColor(appearance.textInputAppearance.placeholderColor)
-        self.textView.setTextPlaceholder(appearance.textInputAppearance.placeholderText)
+        self.textView.placeholderText = appearance.textInputAppearance.placeholderText
         self.textView.layer.borderColor = appearance.textInputAppearance.borderColor.cgColor
         self.textView.layer.borderWidth = appearance.textInputAppearance.borderWidth
+        self.textView.accessibilityIdentifier = appearance.textInputAppearance.accessibilityIdentifier
         self.tabBarInterItemSpacing = appearance.tabBarAppearance.interItemSpacing
         self.tabBarContentInsets = appearance.tabBarAppearance.contentInsets
         self.sendButton.contentEdgeInsets = appearance.sendButtonAppearance.insets
@@ -211,6 +233,7 @@ extension ChatInputBar {
             self.sendButton.setTitleColor(color, for: state.controlState)
         }
         self.sendButton.titleLabel?.font = appearance.sendButtonAppearance.font
+        self.sendButton.accessibilityIdentifier = appearance.sendButtonAppearance.accessibilityIdentifier
         self.tabBarContainerHeightConstraint.constant = appearance.tabBarAppearance.height
     }
 }
@@ -259,12 +282,23 @@ extension ChatInputBar: UITextViewDelegate {
     public func textView(_ textView: UITextView, shouldChangeTextIn nsRange: NSRange, replacementText text: String) -> Bool {
         let range = self.textView.text.bma_rangeFromNSRange(nsRange)
         if let maxCharactersCount = self.maxCharactersCount {
-            let currentCount = textView.text.characters.count
-            let rangeLength = textView.text.substring(with: range).characters.count
-            let nextCount = currentCount - rangeLength + text.characters.count
+            let currentCount = textView.text.count
+            let rangeLength = textView.text[range].count
+            let nextCount = currentCount - rangeLength + text.count
             return UInt(nextCount) <= maxCharactersCount
         }
         return true
+    }
+}
+
+// MARK: ExpandableTextViewPlaceholderDelegate
+extension ChatInputBar: ExpandableTextViewPlaceholderDelegate {
+    public func expandableTextViewDidShowPlaceholder(_ textView: ExpandableTextView) {
+        self.delegate?.inputBarDidShowPlaceholder(self)
+    }
+
+    public func expandableTextViewDidHidePlaceholder(_ textView: ExpandableTextView) {
+        self.delegate?.inputBarDidHidePlaceholder(self)
     }
 }
 

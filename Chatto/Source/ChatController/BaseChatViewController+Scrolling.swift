@@ -79,7 +79,8 @@ extension BaseChatViewController {
         return CGRect(x: CGFloat(0), y: self.collectionView.contentOffset.y + contentInset.top, width: collectionViewBounds.width, height: min(contentSize.height, collectionViewBounds.height - contentInset.top - contentInset.bottom))
     }
 
-    public func scrollToBottom(animated: Bool) {
+    @objc
+    open func scrollToBottom(animated: Bool) {
         // Cancel current scrolling
         self.collectionView.setContentOffset(self.collectionView.contentOffset, animated: false)
 
@@ -106,13 +107,13 @@ extension BaseChatViewController {
         self.collectionView.contentOffset = CGPoint(x: 0, y: self.collectionView.contentOffset.y + diffY)
     }
 
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    open func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if self.collectionView.isDragging {
             self.autoLoadMoreContentIfNeeded()
         }
     }
 
-    public func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+    open func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         self.autoLoadMoreContentIfNeeded()
     }
 

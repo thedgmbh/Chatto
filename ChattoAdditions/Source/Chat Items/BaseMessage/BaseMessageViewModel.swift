@@ -53,12 +53,13 @@ public extension MessageStatus {
 }
 
 public protocol MessageViewModelProtocol: class { // why class? https://gist.github.com/diegosanchezr/29979d22c995b4180830
+    var decorationAttributes: BaseMessageDecorationAttributes { get set }
     var isIncoming: Bool { get }
-    var showsTail: Bool { get set }
-    var showsFailedIcon: Bool { get }
+    var isUserInteractionEnabled: Bool { get set }
+    var isShowingFailedIcon: Bool { get }
     var date: String { get }
     var status: MessageViewModelStatus { get }
-    var avatarImage: Observable<UIImage?> { set get }
+    var avatarImage: Observable<UIImage?> { get set }
     func willBeShown() // Optional
     func wasHidden() // Optional
 }
@@ -73,17 +74,29 @@ public protocol DecoratedMessageViewModelProtocol: MessageViewModelProtocol {
 }
 
 extension DecoratedMessageViewModelProtocol {
+
+    public var decorationAttributes: BaseMessageDecorationAttributes {
+        get {
+            return self.messageViewModel.decorationAttributes
+        }
+        set {
+            self.messageViewModel.decorationAttributes = newValue
+        }
+    }
+
     public var isIncoming: Bool {
         return self.messageViewModel.isIncoming
     }
-    public var showsTail: Bool {
+
+    public var isUserInteractionEnabled: Bool {
         get {
-            return self.messageViewModel.showsTail
+            return self.messageViewModel.isUserInteractionEnabled
         }
         set {
-            self.messageViewModel.showsTail = newValue
+            self.messageViewModel.isUserInteractionEnabled = newValue
         }
     }
+
     public var date: String {
         return self.messageViewModel.date
     }
@@ -92,8 +105,8 @@ extension DecoratedMessageViewModelProtocol {
         return self.messageViewModel.status
     }
 
-    public var showsFailedIcon: Bool {
-        return self.messageViewModel.showsFailedIcon
+    public var isShowingFailedIcon: Bool {
+        return self.messageViewModel.isShowingFailedIcon
     }
 
     public var avatarImage: Observable<UIImage?> {
@@ -111,11 +124,13 @@ open class MessageViewModel: MessageViewModelProtocol {
         return self.messageModel.isIncoming
     }
 
+    open var decorationAttributes: BaseMessageDecorationAttributes
+    open var isUserInteractionEnabled: Bool = true
+
     open var status: MessageViewModelStatus {
         return self.messageModel.status.viewModelStatus()
     }
 
-    open var showsTail: Bool
     open lazy var date: String = {
         return self.dateFormatter.string(from: self.messageModel.date as Date)
     }()
@@ -123,14 +138,17 @@ open class MessageViewModel: MessageViewModelProtocol {
     public let dateFormatter: DateFormatter
     public private(set) var messageModel: MessageModelProtocol
 
-    public init(dateFormatter: DateFormatter, showsTail: Bool, messageModel: MessageModelProtocol, avatarImage: UIImage?) {
+    public init(dateFormatter: DateFormatter,
+                messageModel: MessageModelProtocol,
+                avatarImage: UIImage?,
+                decorationAttributes: BaseMessageDecorationAttributes) {
         self.dateFormatter = dateFormatter
-        self.showsTail = showsTail
         self.messageModel = messageModel
         self.avatarImage = Observable<UIImage?>(avatarImage)
+        self.decorationAttributes = decorationAttributes
     }
 
-    open var showsFailedIcon: Bool {
+    open var isShowingFailedIcon: Bool {
         return self.status == .failed
     }
 
@@ -151,6 +169,9 @@ public class MessageViewModelDefaultBuilder {
 
     public func createMessageViewModel(_ message: MessageModelProtocol) -> MessageViewModelProtocol {
         // Override to use default avatarImage
-        return MessageViewModel(dateFormatter: MessageViewModelDefaultBuilder.dateFormatter, showsTail: false, messageModel: message, avatarImage: nil)
+        return MessageViewModel(dateFormatter: MessageViewModelDefaultBuilder.dateFormatter,
+                                messageModel: message,
+                                avatarImage: nil,
+                                decorationAttributes: BaseMessageDecorationAttributes())
     }
 }

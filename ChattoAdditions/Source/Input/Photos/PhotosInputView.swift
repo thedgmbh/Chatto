@@ -59,7 +59,7 @@ class PhotosInputView: UIView, PhotosInputViewProtocol {
     fileprivate var selectedIndexPath : IndexPath?
     
     var cameraAuthorizationStatus: AVAuthorizationStatus {
-        return AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+        return AVCaptureDevice.authorizationStatus(for: .video)
     }
     
     var photoLibraryAuthorizationStatus: PHAuthorizationStatus {
@@ -110,8 +110,8 @@ class PhotosInputView: UIView, PhotosInputViewProtocol {
     
     private func requestAccessToVideo() {
         guard self.cameraAuthorizationStatus != .authorized else { return }
-        
-        AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { (_) -> Void in
+
+        AVCaptureDevice.requestAccess(for: .video) { (_) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 self.reloadVideoItem()
             })
@@ -202,7 +202,7 @@ extension PhotosInputView: UICollectionViewDataSource {
         if indexPath.item == Constants.liveCameraItemIndex {
             cell = self.liveCameraPresenter.dequeueCell(collectionView: collectionView, indexPath: indexPath)
         } else {
-            cell = self.cellProvider.cellForItemAtIndexPath(indexPath)
+            cell = self.cellProvider.cellForItem(at: indexPath)
         }
         
         var theEditLabel : UILabel!
@@ -260,48 +260,12 @@ extension PhotosInputView: UICollectionViewDelegateFlowLayout {
             if self.photoLibraryAuthorizationStatus != .authorized {
                 self.delegate?.inputViewDidRequestPhotoLibraryPermission(self)
             } else {
-                if selectedIndexPath == indexPath {
-                    
-                    self.dataProvider.requestFullImageAtIndex(indexPath.item - 1) { image in
-                        self.delegate?.inputView(self, didSelectImage: image)
-                    }
-                    
-                    if let item = collectionView.cellForItem(at: indexPath) {
-                        item.contentView.layer.borderColor = UIColor.clear.cgColor
-                        item.contentView.layer.borderWidth = 0
-                        item.alpha = 1
-                        
-                        if let sendLabel = item.contentView.viewWithTag(99) as? UILabel {
-                            sendLabel.isHidden = true
-                        }
-                        
-                        selectedIndexPath = nil
-                    }
-                    
-                }else {
-                    if let oldIndexPath = selectedIndexPath, let item = collectionView.cellForItem(at: oldIndexPath) {
-                        item.contentView.layer.borderColor = UIColor.clear.cgColor
-                        item.contentView.layer.borderWidth = 0
-                        item.alpha = 1
-                        if let sendLabel = item.contentView.viewWithTag(99) as? UILabel {
-                            sendLabel.isHidden = true
-                            item.contentView.bringSubview(toFront: sendLabel);
-                        }
-                    }
-                    
-                    selectedIndexPath = indexPath
-                    if let item = collectionView.cellForItem(at: indexPath) {
-                        item.contentView.layer.borderColor = UIColor(red: 0, green: 255/255, blue: 140/255, alpha: 1).cgColor
-                        item.alpha = 0.7
-                        item.contentView.layer.borderWidth = 2
-                        
-                        if let sendLabel = item.contentView.viewWithTag(99) as? UILabel {
-                            sendLabel.isHidden = false
-                            item.contentView.bringSubview(toFront: sendLabel);
-                        }
-                    }
-                    
-                }
+
+                let request = self.dataProvider.requestFullImage(at: indexPath.item - 1, progressHandler: nil, completion: { [weak self] result in
+                    guard let sSelf = self, let image = result.image else { return }
+                    sSelf.delegate?.inputView(sSelf, didSelectImage: image)
+                })
+                self.cellProvider.configureFullImageLoadingIndicator(at: indexPath, request: request)
             }
         }
     }
@@ -332,7 +296,7 @@ extension PhotosInputView: UICollectionViewDelegateFlowLayout {
 }
 
 extension PhotosInputView: PhotosInputDataProviderDelegate {
-    func handlePhotosInpudDataProviderUpdate(_ dataProvider: PhotosInputDataProviderProtocol, updateBlock: @escaping () -> Void) {
+    func handlePhotosInputDataProviderUpdate(_ dataProvider: PhotosInputDataProviderProtocol, updateBlock: @escaping () -> Void) {
         self.collectionViewQueue.addTask { [weak self] (completion) in
             guard let sSelf = self else { return }
             

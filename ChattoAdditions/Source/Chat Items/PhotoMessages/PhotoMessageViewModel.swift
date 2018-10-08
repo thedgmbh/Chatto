@@ -42,6 +42,8 @@ public protocol PhotoMessageViewModelProtocol: DecoratedMessageViewModelProtocol
     var transferStatus: Observable<TransferStatus> { get set }
     var image: Observable<UIImage?> { get set }
     var imageSize: CGSize { get }
+    var cellAccessibilityIdentifier: String { get }
+    var bubbleAccessibilityIdentifier: String { get }
 }
 
 open class PhotoMessageViewModel<PhotoMessageModelT: PhotoMessageModelProtocol>: PhotoMessageViewModelProtocol {
@@ -56,9 +58,11 @@ open class PhotoMessageViewModel<PhotoMessageModelT: PhotoMessageModelProtocol>:
     open var imageSize: CGSize {
         return self.photoMessage.imageSize
     }
+    public let cellAccessibilityIdentifier = "chatto.message.photo.cell"
+    public let bubbleAccessibilityIdentifier = "chatto.message.photo.bubble"
     public let messageViewModel: MessageViewModelProtocol
-    open var showsFailedIcon: Bool {
-        return self.messageViewModel.showsFailedIcon || self.transferStatus.value == .failed
+    open var isShowingFailedIcon: Bool {
+        return self.messageViewModel.isShowingFailedIcon || self.transferStatus.value == .failed
     }
 
     public init(photoMessage: PhotoMessageModelT, messageViewModel: MessageViewModelProtocol) {

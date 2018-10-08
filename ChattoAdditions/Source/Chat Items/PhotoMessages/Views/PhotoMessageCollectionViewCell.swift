@@ -44,8 +44,9 @@ public final class PhotoMessageCollectionViewCell: BaseMessageCollectionViewCell
         }
     }
 
-    var photoMessageViewModel: PhotoMessageViewModelProtocol! {
+    public var photoMessageViewModel: PhotoMessageViewModelProtocol! {
         didSet {
+            self.accessibilityIdentifier = self.photoMessageViewModel.cellAccessibilityIdentifier
             self.messageViewModel = self.photoMessageViewModel
             self.bubbleView.photoMessageViewModel = self.photoMessageViewModel
         }
