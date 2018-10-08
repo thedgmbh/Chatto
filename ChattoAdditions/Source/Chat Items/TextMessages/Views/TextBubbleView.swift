@@ -344,21 +344,21 @@ extension TextBubbleView {
         
         let formattedString = NSMutableAttributedString(string: str)
         
-        let boldMatches = boldRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
-        let italicMatches = italicRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
-        let strikethroughMatches = strikethroughRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
-        let underlineMatches = underlineRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.characters.count))
+        let boldMatches = boldRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.count))
+        let italicMatches = italicRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.count))
+        let strikethroughMatches = strikethroughRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.count))
+        let underlineMatches = underlineRegEx.matches(in: str, options: [], range: NSMakeRange(0, str.count))
         
-        formattedString.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: fontSize), range: NSMakeRange(0, formattedString.length))
+        formattedString.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: fontSize), range: NSMakeRange(0, formattedString.length))
         
         for match in boldMatches {
             
-            formattedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFont(ofSize: fontSize), range: match.range)
+            formattedString.addAttribute(NSAttributedStringKey.font, value: UIFont.boldSystemFont(ofSize: fontSize), range: match.range)
             
             let startIndex = str.index(str.startIndex, offsetBy: match.range.location)
             let endIndex = str.index(str.startIndex, offsetBy: match.range.length + match.range.location-1)
             
-            let originalText = str[startIndex...endIndex]
+            let originalText = String(str[startIndex...endIndex])
             let targetText = originalText.replacingOccurrences(of: boldMarker, with: "")
             
             textsToReplace.append((originalText, targetText))
@@ -366,12 +366,12 @@ extension TextBubbleView {
         
         for match in italicMatches {
             
-            formattedString.addAttribute(NSFontAttributeName, value: UIFont.italicSystemFont(ofSize: fontSize), range: match.range)
+            formattedString.addAttribute(NSAttributedStringKey.font, value: UIFont.italicSystemFont(ofSize: fontSize), range: match.range)
             
             let startIndex = str.index(str.startIndex, offsetBy: match.range.location)
             let endIndex = str.index(str.startIndex, offsetBy: match.range.length + match.range.location-1)
             
-            let originalText = str[startIndex...endIndex]
+            let originalText = String(str[startIndex...endIndex])
             let targetText = originalText.replacingOccurrences(of: italicMarker, with: "")
             
             textsToReplace.append((originalText, targetText))
@@ -379,13 +379,13 @@ extension TextBubbleView {
         }
         
         for match in strikethroughMatches {
-            formattedString.addAttribute(NSBaselineOffsetAttributeName, value: 0, range: match.range)
-            formattedString.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: match.range)
+            formattedString.addAttribute(NSAttributedStringKey.baselineOffset, value: 0, range: match.range)
+            formattedString.addAttribute(NSAttributedStringKey.strikethroughStyle, value: 2, range: match.range)
             
             let startIndex = str.index(str.startIndex, offsetBy: match.range.location)
             let endIndex = str.index(str.startIndex, offsetBy: match.range.length + match.range.location-1)
             
-            let originalText = str[startIndex...endIndex]
+            let originalText = String(str[startIndex...endIndex])
             let targetText = originalText.replacingOccurrences(of: strikethroughMarker, with: "")
             
             textsToReplace.append((originalText, targetText))
@@ -393,12 +393,12 @@ extension TextBubbleView {
         }
         
         for match in underlineMatches {
-            formattedString.addAttribute(NSUnderlineStyleAttributeName, value: NSUnderlineStyle.styleSingle.rawValue, range: match.range)
+            formattedString.addAttribute(NSAttributedStringKey.underlineStyle, value: NSUnderlineStyle.styleSingle.rawValue, range: match.range)
             
             let startIndex = str.index(str.startIndex, offsetBy: match.range.location)
             let endIndex = str.index(str.startIndex, offsetBy: match.range.length + match.range.location-1)
             
-            let originalText = str[startIndex...endIndex]
+            let originalText = String(str[startIndex...endIndex])
             let targetText = originalText.replacingOccurrences(of: underlineMarker, with: "")
             
             textsToReplace.append((originalText, targetText))
@@ -409,7 +409,7 @@ extension TextBubbleView {
             formattedString.mutableString.replaceOccurrences(of: oldString, with: newString, options: [], range: NSMakeRange(0, formattedString.length))
         }
         
-        formattedString.addAttributes([NSForegroundColorAttributeName:textColor], range: NSMakeRange(0, formattedString.length))
+        formattedString.addAttributes([NSAttributedStringKey.foregroundColor:textColor], range: NSMakeRange(0, formattedString.length))
         
         return formattedString
     }
