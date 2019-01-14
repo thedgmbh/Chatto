@@ -144,7 +144,7 @@ open class BaseChatViewController: UIViewController, UICollectionViewDataSource,
         self.view.addSubview(self.collectionView)
         self.view.addConstraint(NSLayoutConstraint(item: self.view, attribute: .top, relatedBy: .equal, toItem: self.collectionView, attribute: .top, multiplier: 1, constant: 0))
         self.view.addConstraint(NSLayoutConstraint(item: self.view, attribute: .leading, relatedBy: .equal, toItem: self.collectionView, attribute: .leading, multiplier: 1, constant: 0))
-        self.view.addConstraint(NSLayoutConstraint(item: self.view, attribute: .bottom, relatedBy: .equal, toItem: self.collectionView, attribute: .bottom, multiplier: 1, constant: 0))
+
         self.view.addConstraint(NSLayoutConstraint(item: self.view, attribute: .trailing, relatedBy: .equal, toItem: self.collectionView, attribute: .trailing, multiplier: 1, constant: 0))
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
@@ -177,6 +177,8 @@ open class BaseChatViewController: UIViewController, UICollectionViewDataSource,
         self.inputContainer.addConstraint(NSLayoutConstraint(item: self.inputContainer, attribute: .leading, relatedBy: .equal, toItem: inputView, attribute: .leading, multiplier: 1, constant: 0))
         self.inputContainer.addConstraint(NSLayoutConstraint(item: self.inputContainer, attribute: .bottom, relatedBy: .equal, toItem: inputView, attribute: .bottom, multiplier: 1, constant: 0))
         self.inputContainer.addConstraint(NSLayoutConstraint(item: self.inputContainer, attribute: .trailing, relatedBy: .equal, toItem: inputView, attribute: .trailing, multiplier: 1, constant: 0))
+        
+        self.view.addConstraint(NSLayoutConstraint(item: self.inputContainer, attribute: .top, relatedBy: .equal, toItem: self.collectionView, attribute: .bottom, multiplier: 1, constant: 0))
     }
 
     private func addBottomSpaceView() {
@@ -264,7 +266,7 @@ open class BaseChatViewController: UIViewController, UICollectionViewDataSource,
         let isBouncingAtTop = isInteracting && self.collectionView.contentOffset.y < -self.collectionView.contentInset.top
         if !self.placeMessagesFromBottom && isBouncingAtTop { return }
 
-        let inputHeightWithKeyboard = self.view.bounds.height - self.inputContainer.frame.minY
+        let inputHeightWithKeyboard: CGFloat = 0//self.view.bounds.height - self.inputContainer.frame.minY
         let newInsetBottom = self.layoutConfiguration.contentInsets.bottom + inputHeightWithKeyboard
         let insetBottomDiff = newInsetBottom - self.collectionView.contentInset.bottom
         var newInsetTop = self.topLayoutGuide.length + self.layoutConfiguration.contentInsets.top
