@@ -25,6 +25,9 @@
 import Foundation
 
 open class PhotosChatInputItem: ChatInputItemProtocol {
+    public private(set) var supportsExpandableState: Bool = false
+    public private(set) var expandedStateTopMargin: CGFloat = 0.0
+    
     typealias Class = PhotosChatInputItem
 
     public var photoInputHandler: ((UIImage) -> Void)?
@@ -35,8 +38,8 @@ open class PhotosChatInputItem: ChatInputItemProtocol {
     let buttonAppearance: TabInputButtonAppearance
     let inputViewAppearance: PhotosInputViewAppearance
     public init(presentingController: UIViewController?,
-                tabInputButtonAppearance: TabInputButtonAppearance = Class.createDefaultButtonAppearance(),
-                inputViewAppearance: PhotosInputViewAppearance = Class.createDefaultInputViewAppearance()) {
+                tabInputButtonAppearance: TabInputButtonAppearance = PhotosChatInputItem.createDefaultButtonAppearance(),
+                inputViewAppearance: PhotosInputViewAppearance = PhotosChatInputItem.createDefaultInputViewAppearance()) {
         self.presentingController = presentingController
         self.buttonAppearance = tabInputButtonAppearance
         self.inputViewAppearance = inputViewAppearance
@@ -98,15 +101,15 @@ open class PhotosChatInputItem: ChatInputItemProtocol {
 
 // MARK: - PhotosInputViewDelegate
 extension PhotosChatInputItem: PhotosInputViewDelegate {
-    func inputView(_ inputView: PhotosInputViewProtocol, didSelectImage image: UIImage) {
+    public func inputView(_ inputView: PhotosInputViewProtocol, didSelectImage image: UIImage) {
         self.photoInputHandler?(image)
     }
 
-    func inputViewDidRequestCameraPermission(_ inputView: PhotosInputViewProtocol) {
+    public func inputViewDidRequestCameraPermission(_ inputView: PhotosInputViewProtocol) {
         self.cameraPermissionHandler?()
     }
 
-    func inputViewDidRequestPhotoLibraryPermission(_ inputView: PhotosInputViewProtocol) {
+    public func inputViewDidRequestPhotoLibraryPermission(_ inputView: PhotosInputViewProtocol) {
         self.photosPermissionHandler?()
     }
 }

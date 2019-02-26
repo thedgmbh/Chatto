@@ -25,23 +25,27 @@
 import UIKit
 
 class ChatExamplesViewController: CellsViewController {
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.title = "Examples"
-        
+
         self.cellItems = [
             self.makeOverviewCellItem(),
             self.makeChatCellItem(title: "Empty chat", messagesCount: 0),
             self.makeChatCellItem(title: "Chat with 10000 messages", messagesCount: 10_000),
+            self.makeChatCellItem(title: "Chat with expandable input", messagesCount: 10_000, shouldUseAlternativePresenter: true),
             self.makeMessageSelectionCellItem(),
             self.makeOpenWithTabBarCellItem(),
+            self.makeScrollToBottomCellItem(),
+            self.makeCompoundDemoViewController(),
+            self.makeUpdateItemTypeViewController()
         ]
     }
-    
+
     // MARK: - Cells
-    
+
     private func makeOverviewCellItem() -> CellItem {
         return CellItem(title: "Overview", action: { [weak self] in
             let dataSource = DemoChatDataSource(messages: DemoChatMessageFactory.makeOverviewMessages(), pageSize: 50)
@@ -50,12 +54,13 @@ class ChatExamplesViewController: CellsViewController {
             self?.navigationController?.pushViewController(viewController, animated: true)
         })
     }
-    
-    private func makeChatCellItem(title: String, messagesCount: Int) -> CellItem {
+
+    private func makeChatCellItem(title: String, messagesCount: Int, shouldUseAlternativePresenter: Bool = false) -> CellItem {
         return CellItem(title: title, action: { [weak self] in
             let dataSource = DemoChatDataSource(count: messagesCount, pageSize: 50)
             let viewController = AddRandomMessagesChatViewController()
             viewController.dataSource = dataSource
+            viewController.shouldUseAlternativePresenter = shouldUseAlternativePresenter
             self?.navigationController?.pushViewController(viewController, animated: true)
         })
     }
@@ -69,7 +74,7 @@ class ChatExamplesViewController: CellsViewController {
             self?.navigationController?.pushViewController(viewController, animated: true)
         })
     }
-    
+
     private func makeOpenWithTabBarCellItem() -> CellItem {
         return CellItem(title: "UITabBarController examples", action: { [weak self] in
             guard let sSelf = self else { return }
@@ -86,7 +91,32 @@ class ChatExamplesViewController: CellsViewController {
             sSelf.present(tabBarViewController, animated: true, completion: nil)
         })
     }
-    
+
+    private func makeScrollToBottomCellItem() -> CellItem {
+        return CellItem(title: "Scroll To Bottom Button Example", action: { [weak self] in
+            let dataSource = DemoChatDataSource(count: 10_000, pageSize: 50)
+            let viewController = ScrollToBottomButtonChatViewController()
+            viewController.dataSource = dataSource
+            self?.navigationController?.pushViewController(viewController, animated: true)
+        })
+    }
+
+    private func makeUpdateItemTypeViewController() -> CellItem {
+        return CellItem(title: "Dynamically change item type") { [unowned self] in
+            self.navigationController?.pushViewController(UpdateItemTypeViewController(), animated: true)
+        }
+    }
+
+    private func makeCompoundDemoViewController() -> CellItem {
+        return CellItem(title: "Compound message examples") { [unowned self] in
+            let messages = DemoChatMessageFactory.makeCompoundMessages()
+            let dataSource = DemoChatDataSource(messages: messages, pageSize: 50)
+            let viewController = DemoChatViewController()
+            viewController.dataSource = dataSource
+            self.navigationController?.pushViewController(viewController, animated: true)
+        }
+    }
+
     @objc
     private func dismissPresentedController() {
         self.dismiss(animated: true, completion: nil)

@@ -70,7 +70,7 @@ class SendingStatusPresenter: ChatItemPresenterProtocol {
     }
 
     static func registerCells(_ collectionView: UICollectionView) {
-        collectionView.register(UINib(nibName: "SendingStatusCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "SendingStatusCollectionViewCell")
+        collectionView.register(UINib(nibName: "SendingStatusCollectionViewCell", bundle: Bundle(for: self)), forCellWithReuseIdentifier: "SendingStatusCollectionViewCell")
     }
 
     func dequeueCell(collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionViewCell {
@@ -85,8 +85,8 @@ class SendingStatusPresenter: ChatItemPresenterProtocol {
         }
 
         let attrs = [
-            NSAttributedStringKey.font: UIFont.systemFont(ofSize: 10.0),
-            NSAttributedStringKey.foregroundColor: self.statusModel.status == .failed ? UIColor.red : UIColor.black
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 10.0),
+            NSAttributedString.Key.foregroundColor: self.statusModel.status == .failed ? UIColor.red : UIColor.black
         ]
         statusCell.text = NSAttributedString(
             string: self.statusText(),

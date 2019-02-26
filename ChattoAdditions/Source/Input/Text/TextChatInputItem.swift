@@ -29,7 +29,7 @@ open class TextChatInputItem {
     public var textInputHandler: ((String) -> Void)?
 
     let buttonAppearance: TabInputButtonAppearance
-    public init(tabInputButtonAppearance: TabInputButtonAppearance = Class.createDefaultButtonAppearance()) {
+    public init(tabInputButtonAppearance: TabInputButtonAppearance = TextChatInputItem.createDefaultButtonAppearance()) {
         self.buttonAppearance = tabInputButtonAppearance
     }
 
@@ -55,6 +55,14 @@ open class TextChatInputItem {
 
 // MARK: - ChatInputItemProtocol
 extension TextChatInputItem: ChatInputItemProtocol {
+    public var supportsExpandableState: Bool {
+        return false
+    }
+
+    public var expandedStateTopMargin: CGFloat {
+        return 0.0
+    }
+
     public var presentationMode: ChatInputItemPresentationMode {
         return .keyboard
     }
